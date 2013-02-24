@@ -1,0 +1,32 @@
+{
+  "name": "bpopup",
+  "title": "bPopup",
+	"description": "A lightweight customizable jQuery modal popup plugin",
+	"keywords": [
+		"popup",
+		"modal",
+		"window",
+		"options",
+		"ui",
+		"fade",
+		"transition",
+		"animate",
+		"jquery"
+	],
+	"version": "0.9.0",
+	"author": {
+		"name": "Bjørn Klinggaard",
+		"url": "http://dinbror.dk/"
+	},
+	"licenses": [
+		{
+			"type": "DWIWYWBPVMS",
+			"url": "http://dinbror.dk/blog/bpopup"
+		}
+	],
+	"homepage": "http://dinbror.dk/blog/bpopup",
+	"demo": "http://dinbror.dk/bpopup",
+	"dependencies": {
+		"jquery": ">=1.4.2"
+	}
+}
