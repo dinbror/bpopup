@@ -58,9 +58,9 @@
         // HELPER FUNCTIONS - PRIVATE
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function init() {
-            popups = (w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
+            triggerCall(o.onOpen);
+			popups = (w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
             o.loadUrl ? createContent() : open();
-			triggerCall(o.onOpen);
         }
 		function createContent() {
             o.contentContainer = $(o.contentContainer || $popup);
@@ -158,7 +158,7 @@
 		}
         function bindEvents() {
             w.data('bPopup', popups);
-			$popup.delegate('.' + o.closeClass, 'click.'+id, close);
+			$popup.delegate('.bClose, .' + o.closeClass, 'click.'+id, close); // legacy, still supporting the close class bClose
             
             if (o.modalClose) {
                 $('.b-modal.'+id).css('cursor', 'pointer').bind('click', close);
@@ -202,10 +202,10 @@
             if (!o.scrollBar) {
                 $('html').css('overflow', 'auto');
             }
-            $('.bModal.'+id).unbind('click');
+            $('.b-modal.'+id).unbind('click');
             d.unbind('keydown.'+id);
             w.unbind('.'+id).data('bPopup', (w.data('bPopup')-1 > 0) ? w.data('bPopup')-1 : null);
-            $popup.undelegate('.' + o.closeClass, 'click.'+id, close).data('bPopup', null).hide();
+            $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null).hide();
         }
 		function doTransition(open) {
 			switch (o.transition) {
