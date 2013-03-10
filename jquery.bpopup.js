@@ -58,9 +58,9 @@
         // HELPER FUNCTIONS - PRIVATE
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function init() {
-            triggerCall(o.onOpen);
             popups = (w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
             o.loadUrl ? createContent() : open();
+            triggerCall(o.onOpen);
         }
 		function createContent() {
             o.contentContainer = $(o.contentContainer || $popup);
