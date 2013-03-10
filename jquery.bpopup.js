@@ -1,4 +1,4 @@
-/*==================================================================================================================
+/*===================================================================================================================
  * @name: bPopup
  * @type: jQuery
  * @author: (c) Bjoern Klinggaard - @bklinggaard
@@ -6,11 +6,11 @@
  * @version: 0.9.1
  * @requires jQuery 1.4.3
  * todo: refactor
- *=================================================================================================================*/
+ *==================================================================================================================*/
 ;(function($) {
     $.fn.bPopup = function(options, callback) {
         
-		if ($.isFunction(options)) {
+  	if ($.isFunction(options)) {
             callback 		= options;
             options 		= null;
         }
@@ -66,11 +66,13 @@
             o.contentContainer = $(o.contentContainer || $popup);
             switch (o.content) {
                 case ('iframe'):
-					$('<iframe class="b-iframe" scrolling="no" frameborder="0"></iframe>').attr('src', o.loadUrl).appendTo(o.contentContainer);
-					triggerCall(o.loadCallback);
+					var iframe = $('<iframe class="b-iframe" scrolling="no" frameborder="0"></iframe>');
+					iframe.appendTo(o.contentContainer);
 					height = $popup.outerHeight(true);
 					width = $popup.outerWidth(true);
 					open();
+					iframe.attr('src', o.loadUrl); // setting iframe src after open due IE9 bug
+					triggerCall(o.loadCallback);
                     break;
 				case ('image'):
 					open();
@@ -96,11 +98,7 @@
             if (o.modal) {
                 $('<div class="b-modal '+id+'"></div>')
                 .css({backgroundColor: o.modalColor, position: 'fixed', top: 0, right:0, bottom:0, left: 0, opacity: 0, zIndex: o.zIndex + popups})
-                .each(function() {
-                    if(o.appending) {
-                        $(this).appendTo(o.appendTo);
-                    }
-                })
+                .appendTo(o.appendTo)
                 .fadeTo(o.speed, o.opacity);
             }
 			
@@ -219,7 +217,7 @@
 					},o.speed, o.easing, function(){onCompleteCallback(open);});
 			      break;
 			   case "slideDown":
-				  $popup
+			      $popup
 					.show()
 					.animate({
 						top: open ? getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : (vPos + height) *-1
