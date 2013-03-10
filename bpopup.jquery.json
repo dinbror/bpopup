@@ -1,0 +1,34 @@
+{
+  "name": "bpopup",
+  "title": "bPopup",
+  "description": "bPopup is a lightweight jQuery modal popup plugin (only 1.34KB gzipped). It doesn't create or style your popup but provides you with all the logic like centering, modal overlay, events and more. It gives you a lot of opportunities to customize so it will fit your needs.",
+	"keywords": [
+		"popup",
+		"popin",
+		"modal",
+		"window",
+		"options",
+		"ui",
+		"fade",
+		"transition",
+		"animation",
+		"animate",
+		"jquery"
+	],
+	"version": "0.9.1",
+	"author": {
+		"name": "Bjørn Klinggaard",
+		"url": "http://dinbror.dk/"
+	},
+	"licenses": [
+		{
+			"type": "DWIWYWBPVMS",
+			"url": "http://dinbror.dk/blog/bpopup"
+		}
+	],
+	"homepage": "http://dinbror.dk/blog/bpopup",
+	"demo": "http://dinbror.dk/bpopup",
+	"dependencies": {
+		"jquery": ">=1.4.3"
+	}
+}
