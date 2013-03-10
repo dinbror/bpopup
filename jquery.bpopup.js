@@ -1,16 +1,16 @@
-/******************************************************************************************************************
+/*==================================================================================================================
  * @name: bPopup
  * @type: jQuery
  * @author: (c) Bjoern Klinggaard - @bklinggaard
  * @demo: http://dinbror.dk/bpopup
- * @version: 0.9.0
+ * @version: 0.9.1
  * @requires jQuery 1.4.3
  * todo: refactor
- *******************************************************************************************************************/
+ *=================================================================================================================*/
 ;(function($) {
     $.fn.bPopup = function(options, callback) {
         
-  	if ($.isFunction(options)) {
+		if ($.isFunction(options)) {
             callback 		= options;
             options 		= null;
         }
@@ -60,7 +60,7 @@
         function init() {
             popups = (w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
             o.loadUrl ? createContent() : open();
-            triggerCall(o.onOpen);
+			triggerCall(o.onOpen);
         }
 		function createContent() {
             o.contentContainer = $(o.contentContainer || $popup);
@@ -219,7 +219,7 @@
 					},o.speed, o.easing, function(){onCompleteCallback(open);});
 			      break;
 			   case "slideDown":
-			      $popup
+				  $popup
 					.show()
 					.animate({
 						top: open ? getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : (vPos + height) *-1
