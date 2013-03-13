@@ -127,6 +127,13 @@
         }
 		//Eksperimental
 		function recenter(content){
+			
+			if ( !o.autoResize ) {
+				content.show();
+				inside = insideWindow();
+				return;
+			}
+			
 			var _width = content.width(), _height = content.height();
 			o.contentContainer.css({height:_height,width:_width});
 
@@ -280,6 +287,7 @@
           amsl: 			50
         , appending: 		true
         , appendTo: 		'body'
+        , autoResize:		true
         , closeClass: 		'b-close'
         , content: 			'ajax' // ajax, iframe or image
         , contentContainer: false
