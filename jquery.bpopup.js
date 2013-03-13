@@ -287,7 +287,7 @@
           amsl: 			50
         , appending: 		true
         , appendTo: 		'body'
-        , autoResize:		true,
+        , autoResize:		true
         , closeClass: 		'b-close'
         , content: 			'ajax' // ajax, iframe or image
         , contentContainer: false
