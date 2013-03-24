@@ -3,7 +3,7 @@
  * @type: jQuery
  * @author: (c) Bjoern Klinggaard - @bklinggaard
  * @demo: http://dinbror.dk/bpopup
- * @version: 0.9.1
+ * @version: 0.9.2
  * @requires jQuery 1.4.3
  * todo: refactor
  *==================================================================================================================*/
@@ -30,6 +30,7 @@
 			, isIOS6X		= (/OS 6(_\d)+/i).test(navigator.userAgent) // Used for a temporary fix for ios6 timer bug when using zoom/scroll 
         	, buffer		= 20
 			, popups		= 0
+			, closing
         	, id
         	, inside
         	, fixedVPos
@@ -38,7 +39,9 @@
         	, vPos
         	, hPos
 			, height
-			, width;
+			, width
+			, debounce
+			;
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // PUBLIC FUNCTION - call it: $(element).bPopup().close();
@@ -103,7 +106,7 @@
             }
 			
 			// POPUP
-			calCoords();
+			calPosition();
             $popup
 				.data('bPopup', o).data('id',id)
 				.css({ 'left': o.transition === 'slideIn' ? (hPos + width) *-1 : getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)), 'position': o.positionStyle || 'absolute', 'top': o.transition === 'slideDown' ? (vPos + width) *-1 : getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)), 'z-index': o.zIndex + popups + 1 })
@@ -117,38 +120,40 @@
         function close() {
             if (o.modal) {
                 $('.b-modal.'+$popup.data('id'))
-                .fadeTo(o.speed, 0, function() {
-                    $(this).remove();
-                });
+	                .fadeTo(o.speed, 0, function() {
+	                    $(this).remove();
+	                });
             }
+			// Clean up
+			unbindEvents();	
+			// Close trasition
             doTransition();
             
 			return false; // Prevent default
         }
 		//Eksperimental
 		function recenter(content){
-			var _width = content.width(), _height = content.height();
+			var _width = content.width(), _height = content.height(), css = {};
 			o.contentContainer.css({height:_height,width:_width});
-
-			if (_height <= $popup.height()){
-				_height = $popup.height();
+			
+			if (_height >= $popup.height()){
+				css.height = $popup.height();
 			}
-			if(_width <= $popup.width()){
-				_width = $popup.width();
+			if(_width >= $popup.width()){
+				css.width = $popup.width();
 			}
 			height = $popup.outerHeight(true)
 			, width = $popup.outerWidth(true);
 				
+			calPosition();
 			o.contentContainer.css({height:'auto',width:'auto'});		
-			calCoords();
+			
+			css.left = getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)),
+			css.top = getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle));
 			
 			$popup
-				.dequeue()
-				.animate({ 
-					  'left'	: getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle))
-					, 'top'		: getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle))
-					, 'height'	: _height 
-					, 'width'	: _width }
+				.animate(
+					css
 					, 250
 					, function() { 
 						content.show();
@@ -163,7 +168,7 @@
             if (o.modalClose) {
                 $('.b-modal.'+id).css('cursor', 'pointer').bind('click', close);
             }
-
+			
 			// Temporary disabling scroll/resize events on devices with IOS6+
 			// due to a bug where events are dropped after pinch to zoom
             if (!isIOS6X && (o.follow[0] || o.follow[1])) {
@@ -176,17 +181,20 @@
             	}).bind('resize.'+id, function() {
                    	inside = insideWindow();
                    	if(inside){
-						calCoords();
-						$popup
-                           	.dequeue()
-                           	.each(function() {
-                               	if(fixedPosStyle) {
-                                	$(this).css({ 'left': hPos, 'top': vPos });
-                               	}
-                               	else {
-                                   	$(this).animate({ 'left': o.follow[0] ? getLeft(true) : 'auto', 'top': o.follow[1] ? getTop(true) : 'auto' }, o.followSpeed, o.followEasing);
-                               	}
-                           	});
+						clearTimeout(debounce);
+						debounce = setTimeout(function(){
+							calPosition();
+							$popup
+	                           	.dequeue()
+	                           	.each(function() {
+	                               	if(fixedPosStyle) {
+	                                	$(this).css({ 'left': hPos, 'top': vPos });
+	                               	}
+	                               	else {
+	                                   	$(this).animate({ 'left': o.follow[0] ? getLeft(true) : 'auto', 'top': o.follow[1] ? getTop(true) : 'auto' }, o.followSpeed, o.followEasing);
+	                               	}
+	                           	});
+						}, 50);					
                    	}
                 });
             }
@@ -205,26 +213,27 @@
             $('.b-modal.'+id).unbind('click');
             d.unbind('keydown.'+id);
             w.unbind('.'+id).data('bPopup', (w.data('bPopup')-1 > 0) ? w.data('bPopup')-1 : null);
-            $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null).hide();
+            $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null);
         }
 		function doTransition(open) {
 			switch (o.transition) {
 			   case "slideIn":
 			   	  $popup
-					.show()
+					.css({display: 'block',opacity: 1})
 					.animate({
-						left: open ? getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)) : (hPos + width) *-1
+						left: open ? getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)) : d.scrollLeft() - (width || $popup.outerWidth(true)) - 200
 					},o.speed, o.easing, function(){onCompleteCallback(open);});
 			      break;
 			   case "slideDown":
-			      $popup
-					.show()
+				  $popup
+					.css({display: 'block',opacity: 1})
 					.animate({
-						top: open ? getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : (vPos + height) *-1
+						top: open ? getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : d.scrollTop() - (height || $popup.outerHeight(true)) - 200
 					},o.speed, o.easing, function(){onCompleteCallback(open);});
 			      break;
 			   default:
-				  open ? $popup.fadeIn(o.speed, function(){onCompleteCallback(open);}) : $popup.stop().fadeOut(o.speed, o.easing, function(){onCompleteCallback(open);});
+			   	  //Typing 1 and 0 to ensure opacity 1 and not 0.9999998
+				  $popup.stop().fadeTo(o.speed, open ? 1 : 0, function(){onCompleteCallback(open);});
 			}
 		}
 		function onCompleteCallback(open){
@@ -232,12 +241,11 @@
 				bindEvents();
 	            triggerCall(callback);
 			} else {
-				// CLEAN UP
-				unbindEvents();	
+				$popup.hide();
 				triggerCall(o.onClose);
 				if (o.loadUrl) {
                     o.contentContainer.empty();
-					$popup.css({'height': 'auto', 'width': 'auto'});
+					$popup.css({height: 'auto', width: 'auto'});
                 }		
 			}
 		}
@@ -250,17 +258,17 @@
 		function triggerCall(func) {
 			$.isFunction(func) && func.call($popup);
 		}
-       	function calCoords(){
-			vPos = fixedVPos ? o.position[1] : getYCoord()
-			, hPos = fixedHPos ? o.position[0] : getXCoord()
-			, inside = insideWindow();
+       	function calPosition(){
+			vPos 		= fixedVPos ? o.position[1] : getYCoord()
+			, hPos 		= fixedHPos ? o.position[0] : getXCoord()
+			, inside 	= insideWindow();
 		}
 		function getYCoord(){
-            var y = (((windowHeight()- height) / 2) - o.amsl);
+            var y = (((windowHeight()- $popup.outerHeight(true)) / 2) - o.amsl);
 			return (y < buffer ? buffer : y);
 		}
 		function getXCoord(){
- 			return ((windowWidth() - width) / 2);
+ 			return ((windowWidth() - $popup.outerWidth(true)) / 2);
 		}
         function insideWindow(){
             return windowHeight() > $popup.outerHeight(true)+buffer && windowWidth() > $popup.outerWidth(true)+buffer;
