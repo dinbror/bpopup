@@ -15,11 +15,7 @@
 		"animate",
 		"jquery"
 	],
-<<<<<<< HEAD
 	"version": "0.9.2+b.3",
-=======
-	"version": "0.9.2.b.3",
->>>>>>> Updating version
 	"author": {
 		"name": "Bjørn Klinggaard",
 		"url": "http://dinbror.dk/"
