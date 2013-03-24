@@ -3,7 +3,7 @@
  * @type: jQuery
  * @author: (c) Bjoern Klinggaard - @bklinggaard
  * @demo: http://dinbror.dk/bpopup
- * @version: 0.9.2
+ * @version: 0.9.3
  * @requires jQuery 1.4.3
  * todo: refactor
  *==================================================================================================================*/
