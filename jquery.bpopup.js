@@ -208,7 +208,10 @@
             if (o.escClose) {
                 d.bind('keydown.'+id, function(e) {
                     if (e.which == 27) {  //escape
-                        close();
+						var topZIndex = o.zIndex + $(window).data('bPopup') + 1;
+                        if (o.escCloseAll || $popup.css("zIndex") == topZIndex) {
+                            close();
+                        }
                     }
                 });
             }
@@ -300,6 +303,7 @@
         , contentContainer: false
 		, easing: 			'swing'
         , escClose: 		true
+		, escCloseAll:		true
         , follow: 			[true, true] // x, y
 		, followEasing: 	'swing'
         , followSpeed: 		500
