@@ -69,7 +69,7 @@
             o.contentContainer = $(o.contentContainer || $popup);
             switch (o.content) {
                 case ('iframe'):
-					var iframe = $('<iframe class="b-iframe" scrolling="no" frameborder="0"></iframe>');
+					var iframe = $('<iframe class="b-iframe" frameborder="0"></iframe>');
 					iframe.appendTo(o.contentContainer);
 					height = $popup.outerHeight(true);
 					width = $popup.outerWidth(true);
