@@ -26,6 +26,7 @@
         var $popup 			= this
         	, d 			= $(document)
         	, w 			= $(window)
+			, s				= screen        	
         	, prefix		= '__b-popup'
 			, isIOS6X		= (/OS 6(_\d)+/i).test(navigator.userAgent) // Used for a temporary fix for ios6 timer bug when using zoom/scroll 
         	, buffer		= 20
@@ -109,13 +110,19 @@
 			calPosition();
             $popup
 				.data('bPopup', o).data('id',id)
-				.css({ 'left': o.transition === 'slideIn' ? (hPos + width) *-1 : getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)), 'position': o.positionStyle || 'absolute', 'top': o.transition === 'slideDown' ? (vPos + width) *-1 : getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)), 'z-index': o.zIndex + popups + 1 })
+				.css({
+					'left': o.transition === 'slideIn' ? (hPos + width) *-1 : getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)),
+					'position': o.positionStyle || 'absolute',
+					'top': o.transition === 'slideDown' || o.transition === 'slideUp' ? ( o.transition === 'slideUp' ? (s.height + d.scrollTop()) : (vPos + width) *-1 ) : getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)),
+					'z-index': o.zIndex + popups + 1
+				})
 				.each(function() {
             		if(o.appending) {
                 		$(this).appendTo(o.appendTo);
             		}
         		});
 			doTransition(true);	
+			if(o.autoClose){setTimeout(function(){close();}, o.autoClose);}
 		}
         function close() {
             if (o.modal) {
@@ -163,22 +170,22 @@
 		}
         function bindEvents() {
             w.data('bPopup', popups);
-			$popup.delegate('.bClose, .' + o.closeClass, 'click.'+id, close); // legacy, still supporting the close class bClose
+			$popup.on('click.'+id, '.bClose, .' + o.closeClass, close); // legacy, still supporting the close class bClose
             
             if (o.modalClose) {
-                $('.b-modal.'+id).css('cursor', 'pointer').bind('click', close);
+                $('.b-modal.'+id).css('cursor', 'pointer').on('click', close);
             }
 			
 			// Temporary disabling scroll/resize events on devices with IOS6+
 			// due to a bug where events are dropped after pinch to zoom
             if (!isIOS6X && (o.follow[0] || o.follow[1])) {
-                w.bind('scroll.'+id, function() {
+                w.on('scroll.'+id, function() {
                 	if(inside){
                     	$popup
                         	.dequeue()
                             .animate({ 'left': o.follow[0] ? getLeft(!fixedPosStyle) : 'auto', 'top': o.follow[1] ? getTop(!fixedPosStyle) : 'auto' }, o.followSpeed, o.followEasing);
 					 }  
-            	}).bind('resize.'+id, function() {
+            	}).on('resize.'+id, function() {
                    	inside = insideWindow();
                    	if(inside){
 						clearTimeout(debounce);
@@ -199,7 +206,7 @@
                 });
             }
             if (o.escClose) {
-                d.bind('keydown.'+id, function(e) {
+                d.on('keydown.'+id, function(e) {
                     if (e.which == 27) {  //escape
                         close();
                     }
@@ -210,13 +217,14 @@
             if (!o.scrollBar) {
                 $('html').css('overflow', 'auto');
             }
-            $('.b-modal.'+id).unbind('click');
-            d.unbind('keydown.'+id);
-            w.unbind('.'+id).data('bPopup', (w.data('bPopup')-1 > 0) ? w.data('bPopup')-1 : null);
-            $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null);
+            $('.b-modal.'+id).off('click');
+            d.off('keydown.'+id);
+            w.off('.'+id).data('bPopup', (w.data('bPopup')-1 > 0) ? w.data('bPopup')-1 : null);
+            $popup.off('click.'+id, '.bClose, .' + o.closeClass, close).data('bPopup', null);
+
         }
 		function doTransition(open) {
-			switch (o.transition) {
+			switch ( open ? o.transition : (o.transitionClose ? o.transitionClose : o.transition) ) {
 			   case "slideIn":
 			   	  $popup
 					.css({display: 'block',opacity: 1})
@@ -231,6 +239,13 @@
 						top: open ? getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : d.scrollTop() - (height || $popup.outerHeight(true)) - 200
 					},o.speed, o.easing, function(){onCompleteCallback(open);});
 			      break;
+			   case "slideUp":
+				  $popup
+					.css({display: 'block',opacity: 1})
+					.animate({
+						top: open ? getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : s.height + d.scrollTop() + 200
+					},o.speed, o.easing, function(){onCompleteCallback(open);});
+			      break;			      
 			   default:
 			   	  //Typing 1 and 0 to ensure opacity 1 and not 0.9999998
 				  $popup.stop().fadeTo(o.speed, open ? 1 : 0, function(){onCompleteCallback(open);});
@@ -270,7 +285,7 @@
 		function getXCoord(){
  			return ((windowWidth() - $popup.outerWidth(true)) / 2);
 		}
-        function insideWindow(){
+        function insideWindow(){	
             return windowHeight() > $popup.outerHeight(true)+buffer && windowWidth() > $popup.outerWidth(true)+buffer;
         }
 		function windowHeight(){
@@ -311,5 +326,7 @@
 		, speed: 			250 // open & close speed
 		, transition:		'fadeIn' //transitions: fadeIn, slideDown, slideIn
         , zIndex: 			9997 // popup gets z-index 9999, modal overlay 9998
+        , autoClose:        false // 3000 milliseconds to auto close overlay
+        , transitionClose:  false //provide transition to be used on close
     };
 })(jQuery);
