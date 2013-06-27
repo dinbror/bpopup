@@ -106,7 +106,12 @@
                 .fadeTo(o.speed, o.opacity);
             }
 			
-			// POPUP
+			// POPUP			
+			$popup.each(function() {
+        		if(o.appending) {
+            		$(this).appendTo(o.appendTo);
+        		}
+    		});
 			calPosition();
             $popup
 				.data('bPopup', o).data('id',id)
@@ -115,12 +120,7 @@
 					'position': o.positionStyle || 'absolute',
 					'top': o.transition === 'slideDown' || o.transition === 'slideUp' ? ( o.transition === 'slideUp' ? (s.height + d.scrollTop()) : (vPos + width) *-1 ) : getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)),
 					'z-index': o.zIndex + popups + 1
-				})
-				.each(function() {
-            		if(o.appending) {
-                		$(this).appendTo(o.appendTo);
-            		}
-        		});
+				});
 			doTransition(true);	
 			if(o.autoClose){setTimeout(function(){close();}, o.autoClose);}
 		}
