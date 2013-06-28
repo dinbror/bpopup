@@ -186,7 +186,7 @@
 		}
         function bindEvents() {
             w.data('bPopup', popups);
-			$popup.delegate('.bClose, .' + o.closeClass, 'click.'+id, close); // legacy, still supporting the close class bClose
+			$popup.on('click', '.bClose, .' + o.closeClass, close); // legacy, still supporting the close class bClose
             
             if (o.modalClose) {
                 $('.b-modal.'+id).css('cursor', 'pointer').bind('click', close);
@@ -223,7 +223,7 @@
             $('.b-modal.'+id).unbind('click');
             d.unbind('keydown.'+id);
             w.unbind('.'+id).data('bPopup', (w.data('bPopup')-1 > 0) ? w.data('bPopup')-1 : null);
-            $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null);
+            $popup.off('click', '.bClose, .' + o.closeClass).data('bPopup', null);
         }
 		function doTransition(open) {
 			switch (o.transition) {
