@@ -51,6 +51,10 @@
 			id = prefix + w.data('bPopup') + '__';
             close();
         };
+		
+		$popup.reposition = function() {
+			reposition();
+		}
 
         return $popup.each(function() {
             if ($(this).data('bPopup')) return; //POPUP already exists?
@@ -131,6 +135,25 @@
             
 			return false; // Prevent default
         }
+		function reposition() {
+			inside = insideWindow();
+			if(inside){
+				clearTimeout(debounce);
+				debounce = setTimeout(function(){
+					calPosition();
+					$popup
+						.dequeue()
+						.each(function() {
+							if(fixedPosStyle) {
+								$(this).css({ 'left': hPos, 'top': vPos });
+							}
+							else {
+								$(this).animate({ 'left': o.follow[0] ? getLeft(true) : 'auto', 'top': o.follow[1] ? getTop(true) : 'auto' }, o.followSpeed, o.followEasing);
+							}
+						});
+				}, 50);
+			}
+		}
 		//Eksperimental
 		function recenter(content){
 			var _width = content.width(), _height = content.height(), css = {};
@@ -163,7 +186,7 @@
 		}
         function bindEvents() {
             w.data('bPopup', popups);
-			$popup.delegate('.bClose, .' + o.closeClass, 'click.'+id, close); // legacy, still supporting the close class bClose
+			$popup.on('click', '.bClose, .' + o.closeClass, close); // legacy, still supporting the close class bClose
             
             if (o.modalClose) {
                 $('.b-modal.'+id).css('cursor', 'pointer').bind('click', close);
@@ -179,29 +202,16 @@
                             .animate({ 'left': o.follow[0] ? getLeft(!fixedPosStyle) : 'auto', 'top': o.follow[1] ? getTop(!fixedPosStyle) : 'auto' }, o.followSpeed, o.followEasing);
 					 }  
             	}).bind('resize.'+id, function() {
-                   	inside = insideWindow();
-                   	if(inside){
-						clearTimeout(debounce);
-						debounce = setTimeout(function(){
-							calPosition();
-							$popup
-	                           	.dequeue()
-	                           	.each(function() {
-	                               	if(fixedPosStyle) {
-	                                	$(this).css({ 'left': hPos, 'top': vPos });
-	                               	}
-	                               	else {
-	                                   	$(this).animate({ 'left': o.follow[0] ? getLeft(true) : 'auto', 'top': o.follow[1] ? getTop(true) : 'auto' }, o.followSpeed, o.followEasing);
-	                               	}
-	                           	});
-						}, 50);					
-                   	}
+                   	reposition();
                 });
             }
             if (o.escClose) {
                 d.bind('keydown.'+id, function(e) {
                     if (e.which == 27) {  //escape
-                        close();
+						var topZIndex = o.zIndex + $(window).data('bPopup') + 1;
+                        if (o.escCloseAll || $popup.css("zIndex") == topZIndex) {
+                            close();
+                        }
                     }
                 });
             }
@@ -213,7 +223,7 @@
             $('.b-modal.'+id).unbind('click');
             d.unbind('keydown.'+id);
             w.unbind('.'+id).data('bPopup', (w.data('bPopup')-1 > 0) ? w.data('bPopup')-1 : null);
-            $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null);
+            $popup.off('click', '.bClose, .' + o.closeClass).data('bPopup', null);
         }
 		function doTransition(open) {
 			switch (o.transition) {
@@ -293,6 +303,7 @@
         , contentContainer: false
 		, easing: 			'swing'
         , escClose: 		true
+		, escCloseAll:		true
         , follow: 			[true, true] // x, y
 		, followEasing: 	'swing'
         , followSpeed: 		500
