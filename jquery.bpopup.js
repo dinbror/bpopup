@@ -208,7 +208,7 @@
         }
         function unbindEvents() {
             if (!o.scrollBar) {
-                $('html').css('overflow', 'auto');
+                $('html').css('overflow', 'visible');
             }
             $('.b-modal.'+id).unbind('click');
             d.unbind('keydown.'+id);
