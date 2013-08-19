@@ -11,10 +11,10 @@ bPopup is a lightweight jQuery modal popup plugin (only 1.34KB gzipped). It does
 
 ## CHANGELOG
 ### v 0.9.4 ###
-* Added: New transitions, 'slideUp' and 'slideBack'.
-* Added: 'transitionClose', gives you the possibility to use a different transition on close.
-* Added: 'autoClose', thanks to [Leonidaz](https://github.com/Leonidaz) for the suggestion.
-* Added: 'iframeAttr', so you now can control what attributes the iframe should have (and enable the scrollbar as many of you wants).
+* Added: New transitions, `slideUp` and `slideBack`.
+* Added: `transitionClose`, gives you the possibility to use a different transition on close.
+* Added: `autoClose`, thanks to [Leonidaz](https://github.com/Leonidaz) for the suggestion.
+* Added: `iframeAttr`, so you now can control what attributes the iframe should have (and enable the scrollbar as many of you wants).
 * Removed: The minimum 20px gap at the top. It's 0 now.
 
 ### v 0.9.3 ###
