@@ -3,11 +3,12 @@
  * @type: jQuery
  * @author: (c) Bjoern Klinggaard - @bklinggaard
  * @demo: http://dinbror.dk/bpopup
- * @version: 0.9.3
+ * @version: 0.9.4
  * @requires jQuery 1.4.3
- * todo: refactor
  *==================================================================================================================*/
 ;(function($) {
+	'use strict';
+	
     $.fn.bPopup = function(options, callback) {
         
     if ($.isFunction(options)) {
@@ -24,31 +25,33 @@
         
 		// VARIABLES	
         var $popup 			= this
-        	, d 			= $(document)
-        	, w 			= $(window)
-        	, prefix		= '__b-popup'
-			, isIOS6X		= (/OS 6(_\d)+/i).test(navigator.userAgent) // Used for a temporary fix for ios6 timer bug when using zoom/scroll 
-        	, buffer		= 20
-			, popups		= 0
-			, closing
-        	, id
-        	, inside
-        	, fixedVPos
-        	, fixedHPos
-        	, fixedPosStyle
-        	, vPos
-        	, hPos
-			, height
-			, width
-			, debounce
-			;
+          , d 				= $(document)
+          , w 				= window
+		  , $w				= $(w)
+          , wH				= windowHeight()
+		  , wW				= windowWidth()
+          , prefix			= '__b-popup'
+		  , isIOS6X			= (/OS 6(_\d)+/i).test(navigator.userAgent) // Used for a temporary fix for ios6 timer bug when using zoom/scroll 
+          , buffer			= 200
+		  , popups			= 0
+          , id
+          , inside
+          , fixedVPos
+          , fixedHPos
+          , fixedPosStyle
+		  , vPos
+          , hPos
+		  , height
+		  , width
+		  , debounce
+		;
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // PUBLIC FUNCTION - call it: $(element).bPopup().close();
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
         $popup.close = function() {
             o = this.data('bPopup');
-			id = prefix + w.data('bPopup') + '__';
+			id = prefix +$w.data('bPopup') + '__';
             close();
         };
 
@@ -62,14 +65,15 @@
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function init() {
             triggerCall(o.onOpen);
-			popups = (w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
+			popups = ($w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
             o.loadUrl ? createContent() : open();
-        }
+        };
+		
 		function createContent() {
             o.contentContainer = $(o.contentContainer || $popup);
             switch (o.content) {
                 case ('iframe'):
-					var iframe = $('<iframe class="b-iframe" scrolling="no" frameborder="0"></iframe>');
+					var iframe = $('<iframe class="b-iframe" ' + o.iframeAttr +'></iframe>');
 					iframe.appendTo(o.contentContainer);
 					height = $popup.outerHeight(true);
 					width = $popup.outerWidth(true);
@@ -94,7 +98,7 @@
 						}).hide().appendTo(o.contentContainer);
                     break;
             }
-        }
+        };
 
 		function open(){
 			// MODAL OVERLAY
@@ -109,14 +113,19 @@
 			calPosition();
             $popup
 				.data('bPopup', o).data('id',id)
-				.css({ 'left': o.transition === 'slideIn' ? (hPos + width) *-1 : getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)), 'position': o.positionStyle || 'absolute', 'top': o.transition === 'slideDown' ? (vPos + width) *-1 : getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)), 'z-index': o.zIndex + popups + 1 })
-				.each(function() {
+				.css({ 
+					  'left': o.transition == 'slideIn' || o.transition == 'slideBack' ? (o.transition == 'slideBack' ? d.scrollLeft() + wW : (hPos + width) *-1) : getLeftPos(!(!o.follow[0] && fixedHPos || fixedPosStyle))
+					, 'position': o.positionStyle || 'absolute'
+					, 'top': o.transition == 'slideDown' || o.transition == 'slideUp' ? (o.transition == 'slideUp' ? d.scrollTop() + wH : vPos + height * -1) : getTopPos(!(!o.follow[1] && fixedVPos || fixedPosStyle))
+					, 'z-index': o.zIndex + popups + 1 
+				}).each(function() {
             		if(o.appending) {
                 		$(this).appendTo(o.appendTo);
             		}
         		});
 			doTransition(true);	
-		}
+		};
+		
         function close() {
             if (o.modal) {
                 $('.b-modal.'+$popup.data('id'))
@@ -130,7 +139,8 @@
             doTransition();
             
 			return false; // Prevent default
-        }
+        };
+		
 		//Eksperimental
 		function recenter(content){
 			var _width = content.width(), _height = content.height(), css = {};
@@ -148,8 +158,8 @@
 			calPosition();
 			o.contentContainer.css({height:'auto',width:'auto'});		
 			
-			css.left = getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)),
-			css.top = getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle));
+			css.left = getLeftPos(!(!o.follow[0] && fixedHPos || fixedPosStyle)),
+			css.top = getTopPos(!(!o.follow[1] && fixedVPos || fixedPosStyle));
 			
 			$popup
 				.animate(
@@ -160,9 +170,10 @@
 						inside = insideWindow();
 					}
 				);
-		}
+		};
+		
         function bindEvents() {
-            w.data('bPopup', popups);
+            $w.data('bPopup', popups);
 			$popup.delegate('.bClose, .' + o.closeClass, 'click.'+id, close); // legacy, still supporting the close class bClose
             
             if (o.modalClose) {
@@ -172,14 +183,16 @@
 			// Temporary disabling scroll/resize events on devices with IOS6+
 			// due to a bug where events are dropped after pinch to zoom
             if (!isIOS6X && (o.follow[0] || o.follow[1])) {
-                w.bind('scroll.'+id, function() {
+               $w.bind('scroll.'+id, function() {
                 	if(inside){
                     	$popup
                         	.dequeue()
-                            .animate({ 'left': o.follow[0] ? getLeft(!fixedPosStyle) : 'auto', 'top': o.follow[1] ? getTop(!fixedPosStyle) : 'auto' }, o.followSpeed, o.followEasing);
+                            .animate({ 'left': o.follow[0] ? getLeftPos(!fixedPosStyle) : 'auto', 'top': o.follow[1] ? getTopPos(!fixedPosStyle) : 'auto' }, o.followSpeed, o.followEasing);
 					 }  
             	}).bind('resize.'+id, function() {
-                   	inside = insideWindow();
+		            wH = windowHeight();
+		  		    wW = windowWidth();
+					inside = insideWindow();
                    	if(inside){
 						clearTimeout(debounce);
 						debounce = setTimeout(function(){
@@ -191,7 +204,7 @@
 	                                	$(this).css({ 'left': hPos, 'top': vPos });
 	                               	}
 	                               	else {
-	                                   	$(this).animate({ 'left': o.follow[0] ? getLeft(true) : 'auto', 'top': o.follow[1] ? getTop(true) : 'auto' }, o.followSpeed, o.followEasing);
+	                                   	$(this).animate({ 'left': o.follow[0] ? getLeftPos(true) : 'auto', 'top': o.follow[1] ? getTopPos(true) : 'auto' }, o.followSpeed, o.followEasing);
 	                               	}
 	                           	});
 						}, 50);					
@@ -205,41 +218,60 @@
                     }
                 });
             }
-        }
+        };
+		
         function unbindEvents() {
             if (!o.scrollBar) {
                 $('html').css('overflow', 'auto');
             }
             $('.b-modal.'+id).unbind('click');
             d.unbind('keydown.'+id);
-            w.unbind('.'+id).data('bPopup', (w.data('bPopup')-1 > 0) ? w.data('bPopup')-1 : null);
+            $w.unbind('.'+id).data('bPopup', ($w.data('bPopup')-1 > 0) ? $w.data('bPopup')-1 : null);
             $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null);
-        }
+        };
+		
 		function doTransition(open) {
-			switch (o.transition) {
+			switch (open ? o.transition : o.transitionClose || o.transition) {
 			   case "slideIn":
-			   	  $popup
-					.css({display: 'block',opacity: 1})
-					.animate({
-						left: open ? getLeft(!(!o.follow[0] && fixedHPos || fixedPosStyle)) : d.scrollLeft() - (width || $popup.outerWidth(true)) - 200
-					},o.speed, o.easing, function(){onCompleteCallback(open);});
-			      break;
+				   	animate({
+				   		left: open ? getLeftPos(!(!o.follow[0] && fixedHPos || fixedPosStyle)) : d.scrollLeft() - (width || $popup.outerWidth(true)) - buffer
+				   	});
+			      	break;
+			   case "slideBack":
+				   	animate({
+				   		left: open ? getLeftPos(!(!o.follow[0] && fixedHPos || fixedPosStyle)) : d.scrollLeft() + wW + buffer
+				   	});
+			      	break;
 			   case "slideDown":
-				  $popup
-					.css({display: 'block',opacity: 1})
-					.animate({
-						top: open ? getTop(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : d.scrollTop() - (height || $popup.outerHeight(true)) - 200
-					},o.speed, o.easing, function(){onCompleteCallback(open);});
-			      break;
+				   	animate({
+				   		top: open ? getTopPos(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : d.scrollTop() - (height || $popup.outerHeight(true)) - buffer
+				   	});
+			      	break;
+		   		case "slideUp":
+					animate({
+						top: open ? getTopPos(!(!o.follow[1] && fixedVPos || fixedPosStyle)) : d.scrollTop() + wH + buffer
+					});
+		      	  	break;
 			   default:
-			   	  //Typing 1 and 0 to ensure opacity 1 and not 0.9999998
-				  $popup.stop().fadeTo(o.speed, open ? 1 : 0, function(){onCompleteCallback(open);});
+			   	  	//Hardtyping 1 and 0 to ensure opacity 1 and not 0.9999998
+				  	$popup.stop().fadeTo(o.speed, open ? 1 : 0, function(){onCompleteCallback(open);});
 			}
-		}
+			
+			function animate(css){
+			  	$popup
+					.css({display: 'block',opacity: 1})
+					.animate(css, o.speed, o.easing, function(){ onCompleteCallback(open); });
+			};
+		};
+		
+		
 		function onCompleteCallback(open){
 			if(open){
 				bindEvents();
 	            triggerCall(callback);
+				if(o.autoClose){
+					setTimeout(close, o.autoClose);
+				}
 			} else {
 				$popup.hide();
 				triggerCall(o.onClose);
@@ -248,37 +280,37 @@
 					$popup.css({height: 'auto', width: 'auto'});
                 }		
 			}
-		}
-		function getLeft(includeScroll){
+		};
+		
+		function getLeftPos(includeScroll){
 			return includeScroll ? hPos + d.scrollLeft() : hPos;
-		}
-		function getTop(includeScroll){
+		};
+		
+		function getTopPos(includeScroll){
 			return includeScroll ? vPos + d.scrollTop() : vPos;
-		}
+		};
+		
 		function triggerCall(func) {
 			$.isFunction(func) && func.call($popup);
-		}
+		};
+		
        	function calPosition(){
-			vPos 		= fixedVPos ? o.position[1] : getYCoord()
-			, hPos 		= fixedHPos ? o.position[0] : getXCoord()
+			vPos 		= fixedVPos ? o.position[1] : Math.max(0, ((wH- $popup.outerHeight(true)) / 2) - o.amsl)
+			, hPos 		= fixedHPos ? o.position[0] : (wW - $popup.outerWidth(true)) / 2
 			, inside 	= insideWindow();
-		}
-		function getYCoord(){
-            var y = (((windowHeight()- $popup.outerHeight(true)) / 2) - o.amsl);
-			return (y < buffer ? buffer : y);
-		}
-		function getXCoord(){
- 			return ((windowWidth() - $popup.outerWidth(true)) / 2);
-		}
+		};
+		
         function insideWindow(){
-            return windowHeight() > $popup.outerHeight(true)+buffer && windowWidth() > $popup.outerWidth(true)+buffer;
-        }
+            return wH > $popup.outerHeight(true) && wW > $popup.outerWidth(true);
+        };
+		
 		function windowHeight(){
-			return window.innerHeight || w.height();
-		}
+			return w.innerHeight || $w.height();
+		};
+		
 		function windowWidth(){
-			return window.innerWidth || w.width();
-		}
+			return w.innerWidth || $w.width();
+		};
     };
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,6 +320,7 @@
           amsl: 			50
         , appending: 		true
         , appendTo: 		'body'
+		, autoClose:		false
         , closeClass: 		'b-close'
         , content: 			'ajax' // ajax, iframe or image
         , contentContainer: false
@@ -296,6 +329,7 @@
         , follow: 			[true, true] // x, y
 		, followEasing: 	'swing'
         , followSpeed: 		500
+		, iframeAttr: 		'scrolling="no" frameborder="0"'
 		, loadCallback: 	false
 		, loadData: 		false
         , loadUrl: 			false
@@ -310,6 +344,7 @@
         , scrollBar: 		true
 		, speed: 			250 // open & close speed
 		, transition:		'fadeIn' //transitions: fadeIn, slideDown, slideIn
+		, transitionClose:	false
         , zIndex: 			9997 // popup gets z-index 9999, modal overlay 9998
     };
 })(jQuery);

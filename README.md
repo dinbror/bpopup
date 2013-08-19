@@ -1,15 +1,22 @@
 ## bPopup - If you can't get it up - use bPopup
 
 ### DEMO: ###
-http://dinbror.dk/bPopup
+http://dinbror.dk/bpopup
 
 ### API: ###
-http://dinbror.dk/blog/bPopup
+http://dinbror.dk/blog/bpopup
 
 ### DESCRIPTION: ###
 bPopup is a lightweight jQuery modal popup plugin (only 1.34KB gzipped). It doesn't create or style your popup but provides you with all the logic like centering, modal overlay, events and more. It gives you a lot of opportunities to customize so it will fit your needs.
 
 ## CHANGELOG
+### v 0.9.4 ###
+* Added: New transitions, 'slideUp' and 'slideBack'.
+* Added: 'transitionClose', gives you the possibility to use a different transition on close.
+* Added: 'autoClose', thanks to [Leonidaz](https://github.com/Leonidaz) for the suggestion.
+* Added: 'iframeAttr', so you now can control what attributes the iframe should have (and enable the scrollbar as many of you wants).
+* Removed: The minimum 20px gap at the top. It's 0 now.
+
 ### v 0.9.3 ###
 * Transition fix: Unbinding events earlier on close to prevent scroll/resize events triggered when closing the popup and using the "slideIn" or "slideDown" transition.
 * Transition fix: The public close function didn't close the popup when using the "slideIn" or "slideDown" transition.
