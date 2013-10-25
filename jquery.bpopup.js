@@ -89,6 +89,14 @@
 							recenter($(this));
 					    }).attr('src', o.loadUrl).hide().appendTo(o.contentContainer);
 					break;
+				case ('json'):
+					open();
+					$.getJSON(o.loadUrl, o.loadData, function( data ){
+						var wrap = $('<div class="b-ajax-wrapper"></div>').hide().appendTo(o.contentContainer);
+						triggerCall(o.loadCallback, [wrap, data]);
+						recenter(wrap);
+					});
+					break;
                 default:
 					open();
 					$('<div class="b-ajax-wrapper"></div>')
@@ -290,8 +298,8 @@
 			return includeScroll ? vPos + d.scrollTop() : vPos;
 		};
 		
-		function triggerCall(func) {
-			$.isFunction(func) && func.call($popup);
+		function triggerCall(func, args) {
+			$.isFunction(func) && func.apply($popup, args);
 		};
 		
        	function calPosition(){
