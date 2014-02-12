@@ -8,9 +8,9 @@
  *==================================================================================================================*/
 ;(function($) {
 	'use strict';
-	
+
     $.fn.bPopup = function(options, callback) {
-        
+
     if ($.isFunction(options)) {
             callback 		= options;
             options 		= null;
@@ -18,12 +18,12 @@
 
 		// OPTIONS
         var o 				= $.extend({}, $.fn.bPopup.defaults, options);
-        
-		// HIDE SCROLLBAR?  
+
+		// HIDE SCROLLBAR?
         if (!o.scrollBar)
             $('html').css('overflow', 'hidden');
-        
-		// VARIABLES	
+
+		// VARIABLES
         var $popup 			= this
           , d 				= $(document)
           , w 				= window
@@ -31,7 +31,7 @@
           , wH				= windowHeight()
 		  , wW				= windowWidth()
           , prefix			= '__b-popup'
-		  , isIOS6X			= (/OS 6(_\d)+/i).test(navigator.userAgent) // Used for a temporary fix for ios6 timer bug when using zoom/scroll 
+		  , isIOS6X			= (/OS 6(_\d)+/i).test(navigator.userAgent) // Used for a temporary fix for ios6 timer bug when using zoom/scroll
           , buffer			= 200
 		  , popups			= 0
           , id
@@ -68,7 +68,7 @@
 			popups = ($w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
             o.loadUrl ? createContent() : open();
         };
-		
+
 		function createContent() {
             o.contentContainer = $(o.contentContainer || $popup);
             switch (o.content) {
@@ -108,44 +108,44 @@
                 .appendTo(o.appendTo)
                 .fadeTo(o.speed, o.opacity);
             }
-			
+
 			// POPUP
 			calPosition();
             $popup
 				.data('bPopup', o).data('id',id)
-				.css({ 
+				.css({
 					  'left': o.transition == 'slideIn' || o.transition == 'slideBack' ? (o.transition == 'slideBack' ? d.scrollLeft() + wW : (hPos + width) *-1) : getLeftPos(!(!o.follow[0] && fixedHPos || fixedPosStyle))
 					, 'position': o.positionStyle || 'absolute'
 					, 'top': o.transition == 'slideDown' || o.transition == 'slideUp' ? (o.transition == 'slideUp' ? d.scrollTop() + wH : vPos + height * -1) : getTopPos(!(!o.follow[1] && fixedVPos || fixedPosStyle))
-					, 'z-index': o.zIndex + popups + 1 
+					, 'z-index': o.zIndex + popups + 1
 				}).each(function() {
             		if(o.appending) {
-                		$(this).appendTo(o.appendTo);
+                		$(this).clone().appendTo(o.appendTo);
             		}
         		});
-			doTransition(true);	
+			doTransition(true);
 		};
-		
+
         function close() {
             if (o.modal) {
                 $('.b-modal.'+$popup.data('id'))
 	                .fadeTo(o.speed, 0, function() {
 	                    $(this).remove();
-	                });
+	                }).next().remove();
             }
 			// Clean up
-			unbindEvents();	
+			unbindEvents();
 			// Close trasition
             doTransition();
-            
+
 			return false; // Prevent default
         };
-		
+
 		//Eksperimental
 		function recenter(content){
 			var _width = content.width(), _height = content.height(), css = {};
 			o.contentContainer.css({height:_height,width:_width});
-			
+
 			if (_height >= $popup.height()){
 				css.height = $popup.height();
 			}
@@ -154,32 +154,32 @@
 			}
 			height = $popup.outerHeight(true)
 			, width = $popup.outerWidth(true);
-				
+
 			calPosition();
-			o.contentContainer.css({height:'auto',width:'auto'});		
-			
+			o.contentContainer.css({height:'auto',width:'auto'});
+
 			css.left = getLeftPos(!(!o.follow[0] && fixedHPos || fixedPosStyle)),
 			css.top = getTopPos(!(!o.follow[1] && fixedVPos || fixedPosStyle));
-			
+
 			$popup
 				.animate(
 					css
 					, 250
-					, function() { 
+					, function() {
 						content.show();
 						inside = insideWindow();
 					}
 				);
 		};
-		
+
         function bindEvents() {
             $w.data('bPopup', popups);
 			$popup.delegate('.bClose, .' + o.closeClass, 'click.'+id, close); // legacy, still supporting the close class bClose
-            
+
             if (o.modalClose) {
                 $('.b-modal.'+id).css('cursor', 'pointer').bind('click', close);
             }
-			
+
 			// Temporary disabling scroll/resize events on devices with IOS6+
 			// due to a bug where events are dropped after pinch to zoom
             if (!isIOS6X && (o.follow[0] || o.follow[1])) {
@@ -188,7 +188,7 @@
                     	$popup
                         	.dequeue()
                             .animate({ 'left': o.follow[0] ? getLeftPos(!fixedPosStyle) : 'auto', 'top': o.follow[1] ? getTopPos(!fixedPosStyle) : 'auto' }, o.followSpeed, o.followEasing);
-					 }  
+					 }
             	}).bind('resize.'+id, function() {
 		            wH = windowHeight();
 		  		    wW = windowWidth();
@@ -207,7 +207,7 @@
 	                                   	$(this).animate({ 'left': o.follow[0] ? getLeftPos(true) : 'auto', 'top': o.follow[1] ? getTopPos(true) : 'auto' }, o.followSpeed, o.followEasing);
 	                               	}
 	                           	});
-						}, 50);					
+						}, 50);
                    	}
                 });
             }
@@ -219,7 +219,7 @@
                 });
             }
         };
-		
+
         function unbindEvents() {
             if (!o.scrollBar) {
                 $('html').css('overflow', 'auto');
@@ -229,7 +229,7 @@
             $w.unbind('.'+id).data('bPopup', ($w.data('bPopup')-1 > 0) ? $w.data('bPopup')-1 : null);
             $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null);
         };
-		
+
 		function doTransition(open) {
 			switch (open ? o.transition : o.transitionClose || o.transition) {
 			   case "slideIn":
@@ -256,15 +256,15 @@
 			   	  	//Hardtyping 1 and 0 to ensure opacity 1 and not 0.9999998
 				  	$popup.stop().fadeTo(o.speed, open ? 1 : 0, function(){onCompleteCallback(open);});
 			}
-			
+
 			function animate(css){
 			  	$popup
 					.css({display: 'block',opacity: 1})
 					.animate(css, o.speed, o.easing, function(){ onCompleteCallback(open); });
 			};
 		};
-		
-		
+
+
 		function onCompleteCallback(open){
 			if(open){
 				bindEvents();
@@ -278,36 +278,36 @@
 				if (o.loadUrl) {
                     o.contentContainer.empty();
 					$popup.css({height: 'auto', width: 'auto'});
-                }		
+                }
 			}
 		};
-		
+
 		function getLeftPos(includeScroll){
 			return includeScroll ? hPos + d.scrollLeft() : hPos;
 		};
-		
+
 		function getTopPos(includeScroll){
 			return includeScroll ? vPos + d.scrollTop() : vPos;
 		};
-		
+
 		function triggerCall(func) {
 			$.isFunction(func) && func.call($popup);
 		};
-		
+
        	function calPosition(){
 			vPos 		= fixedVPos ? o.position[1] : Math.max(0, ((wH- $popup.outerHeight(true)) / 2) - o.amsl)
 			, hPos 		= fixedHPos ? o.position[0] : (wW - $popup.outerWidth(true)) / 2
 			, inside 	= insideWindow();
 		};
-		
+
         function insideWindow(){
             return wH > $popup.outerHeight(true) && wW > $popup.outerWidth(true);
         };
-		
+
 		function windowHeight(){
 			return w.innerHeight || $w.height();
 		};
-		
+
 		function windowWidth(){
 			return w.innerWidth || $w.width();
 		};
