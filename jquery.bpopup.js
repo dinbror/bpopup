@@ -9,6 +9,15 @@
 ;(function($) {
 	'use strict';
 
+    jQuery.fn.center = function () {
+        this.css("position","absolute");
+        this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2) +
+                                 $(window).scrollTop()) + "px");
+        this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) +
+                                  $(window).scrollLeft()) + "px");
+        return this;
+    };
+
     $.fn.bPopup = function(options, callback) {
 
     if ($.isFunction(options)) {
@@ -120,7 +129,7 @@
 					, 'z-index': o.zIndex + popups + 1
 				}).each(function() {
             		if(o.appending) {
-                		$(this).clone().appendTo(o.appendTo);
+                		$(this).clone().appendTo(o.appendTo).center();
             		}
         		});
 			doTransition(true);
