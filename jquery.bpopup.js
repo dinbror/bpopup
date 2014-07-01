@@ -46,6 +46,7 @@
 		  , debounce
 		;
 
+
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // PUBLIC FUNCTION - call it: $(element).bPopup().close();
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +85,10 @@
 				case ('image'):
 					open();
 					$('<img />')
-						.load(function() {
+						.load(o.loadUrl, o.loadData,function(response, status, xhr ) {
+							if ( xhr.statusText == "error" && o.errorCallback!=false) {
+							    triggerCall(o.errorCallback(xhr));
+							}
 						    triggerCall(o.loadCallback);
 							recenter($(this));
 					    }).attr('src', o.loadUrl).hide().appendTo(o.contentContainer);
@@ -92,7 +96,11 @@
                 default:
 					open();
 					$('<div class="b-ajax-wrapper"></div>')
-                    	.load(o.loadUrl, o.loadData, function(){
+                    	.load(o.loadUrl, o.loadData, function(response, status, xhr ) {
+							if ( xhr.statusText == "error" && o.errorCallback!=false) {
+							    triggerCall(o.errorCallback(xhr));
+							}
+
 						    triggerCall(o.loadCallback);
 							recenter($(this));
 						}).hide().appendTo(o.contentContainer);
@@ -331,6 +339,7 @@
         , followSpeed: 		500
 		, iframeAttr: 		'scrolling="no" frameborder="0"'
 		, loadCallback: 	false
+		, errorCallback: 	false
 		, loadData: 		false
         , loadUrl: 			false
         , modal: 			true
