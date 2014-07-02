@@ -46,6 +46,7 @@
 		  , debounce
 		;
 
+
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // PUBLIC FUNCTION - call it: $(element).bPopup().close();
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,12 +88,17 @@
 						.load(function() {
 						    triggerCall(o.loadCallback);
 							recenter($(this));
-					    }).attr('src', o.loadUrl).hide().appendTo(o.contentContainer);
+					    }).attr('src', o.loadUrl).error(function(err){
+						  triggerCall(o.errorCallback);
+						}).hide().appendTo(o.contentContainer);
 					break;
                 default:
 					open();
 					$('<div class="b-ajax-wrapper"></div>')
-                    	.load(o.loadUrl, o.loadData, function(){
+                    	.load(o.loadUrl, o.loadData,function(response, status, xhr ) {
+							if ( status == "error" && o.errorCallback!=false) {
+							    triggerCall(o.errorCallback);
+							}
 						    triggerCall(o.loadCallback);
 							recenter($(this));
 						}).hide().appendTo(o.contentContainer);
@@ -331,6 +337,7 @@
         , followSpeed: 		500
 		, iframeAttr: 		'scrolling="no" frameborder="0"'
 		, loadCallback: 	false
+		, errorCallback: 	false
 		, loadData: 		false
         , loadUrl: 			false
         , modal: 			true
