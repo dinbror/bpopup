@@ -85,24 +85,19 @@
 				case ('image'):
 					open();
 					$('<img />')
-						.load(function(){
-							recenter($(this));
-							return o.loadUrl;
-						}, null,function(response, status, xhr ) {
-							if ( status == "error" && o.errorCallback!=false) {
-								recenter($(this));
-							    triggerCall(o.errorCallback(xhr));
-							}
+						.load(function() {
 						    triggerCall(o.loadCallback);
 							recenter($(this));
-					    }).attr('src', o.loadUrl).hide().appendTo(o.contentContainer);
+					    }).attr('src', o.loadUrl).error(function(err){
+						  triggerCall(o.errorCallback);
+						}).hide().appendTo(o.contentContainer);
 					break;
                 default:
 					open();
 					$('<div class="b-ajax-wrapper"></div>')
-                    	.load(o.loadUrl, o.loadData, function(response, status, xhr ) {
+                    	.load(o.loadUrl, o.loadData,function(response, status, xhr ) {
 							if ( status == "error" && o.errorCallback!=false) {
-							    triggerCall(o.errorCallback(xhr));
+							    triggerCall(o.errorCallback);
 							}
 						    triggerCall(o.loadCallback);
 							recenter($(this));
