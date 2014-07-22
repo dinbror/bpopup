@@ -15,7 +15,7 @@
 		"animate",
 		"jquery"
 	],
-	"version": "0.10.0",
+	"version": "0.10.0.1",
 	"author": {
 		"name": "Bjørn Klinggaard",
 		"url": "http://dinbror.dk/"
