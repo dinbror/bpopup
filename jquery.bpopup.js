@@ -3,7 +3,7 @@
  * @type: jQuery
  * @author: (c) Bjoern Klinggaard - @bklinggaard
  * @demo: http://dinbror.dk/bpopup
- * @version: 0.9.4
+ * @version: 0.10.0
  * @requires jQuery 1.4.3
  *==================================================================================================================*/
 ;(function($) {
@@ -11,14 +11,14 @@
 	
     $.fn.bPopup = function(options, callback) {
         
-    if ($.isFunction(options)) {
+    	if ($.isFunction(options)) {
             callback 		= options;
             options 		= null;
         }
 
 		// OPTIONS
         var o 				= $.extend({}, $.fn.bPopup.defaults, options);
-        
+		
 		// HIDE SCROLLBAR?  
         if (!o.scrollBar)
             $('html').css('overflow', 'hidden');
@@ -44,15 +44,18 @@
 		  , height
 		  , width
 		  , debounce
+		  , autoCloseTO
 		;
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // PUBLIC FUNCTION - call it: $(element).bPopup().close();
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
         $popup.close = function() {
-            o = this.data('bPopup');
-			id = prefix +$w.data('bPopup') + '__';
             close();
+        };
+		
+        $popup.reposition = function(animateSpeed) {
+            reposition(animateSpeed);
         };
 
         return $popup.each(function() {
@@ -92,8 +95,8 @@
                 default:
 					open();
 					$('<div class="b-ajax-wrapper"></div>')
-                    	.load(o.loadUrl, o.loadData, function(){
-						    triggerCall(o.loadCallback);
+                    	.load(o.loadUrl, o.loadData, function(response, status, xhr) {
+						    triggerCall(o.loadCallback, status);
 							recenter($(this));
 						}).hide().appendTo(o.contentContainer);
                     break;
@@ -110,7 +113,7 @@
             }
 			
 			// POPUP
-			calPosition();
+			calcPosition();
             $popup
 				.data('bPopup', o).data('id',id)
 				.css({ 
@@ -135,11 +138,35 @@
             }
 			// Clean up
 			unbindEvents();	
+			clearTimeout(autoCloseTO);
 			// Close trasition
             doTransition();
             
 			return false; // Prevent default
         };
+		
+		function reposition(animateSpeed){
+            wH = windowHeight();
+  		    wW = windowWidth();
+			inside = insideWindow();
+           	if(inside){
+				clearTimeout(debounce);
+				debounce = setTimeout(function(){
+					calcPosition();
+					animateSpeed = animateSpeed || o.followSpeed;
+					$popup
+                       	.dequeue()
+                       	.each(function() {
+                           	if(fixedPosStyle) {
+                            	$(this).css({ 'left': hPos, 'top': vPos });
+                           	}
+                           	else {
+                               	$(this).animate({ 'left': o.follow[0] ? getLeftPos(true) : 'auto', 'top': o.follow[1] ? getTopPos(true) : 'auto' }, animateSpeed, o.followEasing);
+                           	}
+                       	});
+				}, 50);					
+           	}
+		};
 		
 		//Eksperimental
 		function recenter(content){
@@ -155,7 +182,7 @@
 			height = $popup.outerHeight(true)
 			, width = $popup.outerWidth(true);
 				
-			calPosition();
+			calcPosition();
 			o.contentContainer.css({height:'auto',width:'auto'});		
 			
 			css.left = getLeftPos(!(!o.follow[0] && fixedHPos || fixedPosStyle)),
@@ -190,25 +217,7 @@
                             .animate({ 'left': o.follow[0] ? getLeftPos(!fixedPosStyle) : 'auto', 'top': o.follow[1] ? getTopPos(!fixedPosStyle) : 'auto' }, o.followSpeed, o.followEasing);
 					 }  
             	}).bind('resize.'+id, function() {
-		            wH = windowHeight();
-		  		    wW = windowWidth();
-					inside = insideWindow();
-                   	if(inside){
-						clearTimeout(debounce);
-						debounce = setTimeout(function(){
-							calPosition();
-							$popup
-	                           	.dequeue()
-	                           	.each(function() {
-	                               	if(fixedPosStyle) {
-	                                	$(this).css({ 'left': hPos, 'top': vPos });
-	                               	}
-	                               	else {
-	                                   	$(this).animate({ 'left': o.follow[0] ? getLeftPos(true) : 'auto', 'top': o.follow[1] ? getTopPos(true) : 'auto' }, o.followSpeed, o.followEasing);
-	                               	}
-	                           	});
-						}, 50);					
-                   	}
+		            reposition();
                 });
             }
             if (o.escClose) {
@@ -270,7 +279,7 @@
 				bindEvents();
 	            triggerCall(callback);
 				if(o.autoClose){
-					setTimeout(close, o.autoClose);
+					autoCloseTO = setTimeout(close, o.autoClose);
 				}
 			} else {
 				$popup.hide();
@@ -290,11 +299,11 @@
 			return includeScroll ? vPos + d.scrollTop() : vPos;
 		};
 		
-		function triggerCall(func) {
-			$.isFunction(func) && func.call($popup);
+		function triggerCall(func, arg) {
+			$.isFunction(func) && func.call($popup, arg);
 		};
 		
-       	function calPosition(){
+       	function calcPosition(){
 			vPos 		= fixedVPos ? o.position[1] : Math.max(0, ((wH- $popup.outerHeight(true)) / 2) - o.amsl)
 			, hPos 		= fixedHPos ? o.position[0] : (wW - $popup.outerWidth(true)) / 2
 			, inside 	= insideWindow();
@@ -343,7 +352,7 @@
         , positionStyle: 	'absolute'// absolute or fixed
         , scrollBar: 		true
 		, speed: 			250 // open & close speed
-		, transition:		'fadeIn' //transitions: fadeIn, slideDown, slideIn
+		, transition:		'fadeIn' //transitions: fadeIn, slideDown, slideIn, slideBack
 		, transitionClose:	false
         , zIndex: 			9997 // popup gets z-index 9999, modal overlay 9998
     };
