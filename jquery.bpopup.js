@@ -305,7 +305,7 @@
 		
        	function calcPosition(){
 			vPos 		= fixedVPos ? o.position[1] : Math.max(0, ((wH- $popup.outerHeight(true)) / 2) - o.amsl)
-			, hPos 		= fixedHPos ? o.position[0] : (wW - $popup.outerWidth(true)) / 2
+			, hPos 		= fixedHPos ? o.position[0] : ((wW - $popup.outerWidth(true)) / 2) - o.xAdd
 			, inside 	= insideWindow();
 		};
 		
@@ -354,6 +354,7 @@
 		, speed: 			250 // open & close speed
 		, transition:		'fadeIn' //transitions: fadeIn, slideDown, slideIn, slideBack
 		, transitionClose:	false
+          xAdd:                         0
         , zIndex: 			9997 // popup gets z-index 9999, modal overlay 9998
     };
 })(jQuery);
