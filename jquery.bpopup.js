@@ -170,8 +170,51 @@
 		
 		//Eksperimental
 		function recenter(content){
+		        if(o.resizeToImg){
+		            if(o.content != "image")
+		                {
+		                    alert('You cannot use "resizeToImg" on not images content.');	
+		                }
+                            // Create new offscreen image to test
+                            var theImage = new Image();
+                            theImage.src = content.attr("src");
+
+                            // Get accurate measurements from that.
+                            var imageWidth = theImage.width;
+                            var imageHeight = theImage.height;		
+                            
+                            if(o.resizeToMaxScreen > 0){
+                                if(imageWidth > $(window).width() * o.resizeToMaxScreen)
+                                {
+                                    var sw = $(window).width() * o.resizeToMaxScreen;
+                                    var r=0;
+                                    
+                                    r = sw / imageWidth;
+                                    
+                                    imageWidth=sw;
+                                    imageHeight *= r;
+                                }
+
+                                if(imageHeight > $(window).height() * o.resizeToMaxScreen)
+                                {
+                                    var sw = $(window).height() * o.resizeToMaxScreen;
+                                    var r=0;
+                                    
+                                    r = sw / imageHeight;
+                                    
+                                    imageHeight=sw;
+                                    imageWidth *= r;
+                                }
+                            }
+                            
+                            content.css({width: imageWidth, height: imageHeight});
+                            $popup.css({width: imageWidth, height: imageHeight});
+		
+                        }
 			var _width = content.width(), _height = content.height(), css = {};
+
 			o.contentContainer.css({height:_height,width:_width});
+			
 			
 			if (_height >= $popup.height()){
 				css.height = $popup.height();
@@ -179,6 +222,7 @@
 			if(_width >= $popup.width()){
 				css.width = $popup.width();
 			}
+
 			height = $popup.outerHeight(true)
 			, width = $popup.outerWidth(true);
 				
@@ -350,6 +394,8 @@
         , opacity: 			0.7
         , position: 		['auto', 'auto'] // x, y,
         , positionStyle: 	'absolute'// absolute or fixed
+        , resizeToImg:		false
+        , resizeToMaxScreen:	1		// Allow image to be (0..1)*100% of screen; 0: disable
         , scrollBar: 		true
 		, speed: 			250 // open & close speed
 		, transition:		'fadeIn' //transitions: fadeIn, slideDown, slideIn, slideBack
