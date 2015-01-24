@@ -10,6 +10,10 @@ http://dinbror.dk/blog/bpopup
 bPopup is a lightweight jQuery modal popup plugin (only 1.34KB gzipped). It doesn't create or style your popup but provides you with all the logic like centering, modal overlay, events and more. It gives you a lot of opportunities to customize so it will fit your needs.
 
 ## CHANGELOG
+### v 0.11.0 (01-24-2015) ###
+* Bugfix: Using fallback width as default to fix the width issue when scrollbar visible. Fixed [#7](https://github.com/dinbror/bpopup/issues/7) and fixed [#21](https://github.com/dinbror/bpopup/issues/21).
+* Bugfix: "insideWindow" function updated so it now checks if height OR width is inside window instead of only width AND height. Fixed [#17](https://github.com/dinbror/bpopup/issues/17).
+
 ### v 0.10.0 (07-22-2014) ###
 * Bugfix: `autoClose` will not trigger if you close the popup before it times out.
 * Added: `reposition(animateSpeed)`, a public function that recalculates the center position of the popup. You can pass an optionel animate speed attribute. If not defined it will use the `followSpeed` value ([#8](https://github.com/dinbror/bpopup/pull/8)). 

@@ -1,18 +1,16 @@
 {
-	"name": "bLazy",
-	"main": "bLazy.js",
-	"version": "1.2.2",
-	"description": "bLazy is a lightweight script for lazy loading and multi-serving images",
-	"homepage": "https://github.com/dinbror/blazy",
+	"name": "bPopup",
+	"main": "jquery.bpopup.js",
+	"version": "0.11.0",
+	"description": " bPopup is a lightweight jQuery modal popup plugin. It doesn't create or style your popup but provides you with all the logic like centering, modal overlay, events and more. It gives you a lot of opportunities to customize so it will fit your needs.",
+	"homepage": "https://github.com/dinbror/bpopup",
 	"keywords": [
-		"blazy",
-		"lazy",
-		"lazyload",
-		"retina",
-		"responsive",
-		"image",
-		"images",
-		"javascript"
+		"bpopup",
+		"popup",
+		"overlay",
+		"modal",
+		"ui",
+		"jquery"
 	],
 	"authors": [
 		{
@@ -21,9 +19,9 @@
 			"email": "hello@dinbror.dk"
 		}
 	],
-	"license": "MIT",
+	"license": "DWIWYWBPVMS",
 	"moduleType": [
-    		"amd"
+    		"jquery"
 	],
 	"ignore": []
 }

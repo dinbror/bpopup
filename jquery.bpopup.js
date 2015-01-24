@@ -3,7 +3,7 @@
  * @type: jQuery
  * @author: (c) Bjoern Klinggaard - @bklinggaard
  * @demo: http://dinbror.dk/bpopup
- * @version: 0.10.0
+ * @version: 0.11.0
  * @requires jQuery 1.4.3
  *==================================================================================================================*/
 ;(function($) {
@@ -149,11 +149,16 @@
             wH = windowHeight();
   		    wW = windowWidth();
 			inside = insideWindow();
-           	if(inside){
+           	if(inside.x || inside.y){
 				clearTimeout(debounce);
 				debounce = setTimeout(function(){
 					calcPosition();
 					animateSpeed = animateSpeed || o.followSpeed;
+					var css = {};
+					if(inside.x)
+						css.left = o.follow[0] ? getLeftPos(true) : 'auto';
+					if(inside.y)
+						css.top = o.follow[1] ? getTopPos(true) : 'auto';
 					$popup
                        	.dequeue()
                        	.each(function() {
@@ -161,7 +166,7 @@
                             	$(this).css({ 'left': hPos, 'top': vPos });
                            	}
                            	else {
-                               	$(this).animate({ 'left': o.follow[0] ? getLeftPos(true) : 'auto', 'top': o.follow[1] ? getTopPos(true) : 'auto' }, animateSpeed, o.followEasing);
+                               	$(this).animate(css, animateSpeed, o.followEasing);
                            	}
                        	});
 				}, 50);					
@@ -172,7 +177,7 @@
 		function recenter(content){
 			var _width = content.width(), _height = content.height(), css = {};
 			o.contentContainer.css({height:_height,width:_width});
-			
+
 			if (_height >= $popup.height()){
 				css.height = $popup.height();
 			}
@@ -187,7 +192,7 @@
 			
 			css.left = getLeftPos(!(!o.follow[0] && fixedHPos || fixedPosStyle)),
 			css.top = getTopPos(!(!o.follow[1] && fixedVPos || fixedPosStyle));
-			
+
 			$popup
 				.animate(
 					css
@@ -211,10 +216,15 @@
 			// due to a bug where events are dropped after pinch to zoom
             if (!isIOS6X && (o.follow[0] || o.follow[1])) {
                $w.bind('scroll.'+id, function() {
-                	if(inside){
+                	if(inside.x || inside.y){
+						var css = {};
+						if(inside.x)
+							css.left =  o.follow[0] ? getLeftPos(!fixedPosStyle) : 'auto';
+						if(inside.y)
+							css.top = o.follow[1] ? getTopPos(!fixedPosStyle) : 'auto';
                     	$popup
                         	.dequeue()
-                            .animate({ 'left': o.follow[0] ? getLeftPos(!fixedPosStyle) : 'auto', 'top': o.follow[1] ? getTopPos(!fixedPosStyle) : 'auto' }, o.followSpeed, o.followEasing);
+                            .animate(css, o.followSpeed, o.followEasing);
 					 }  
             	}).bind('resize.'+id, function() {
 		            reposition();
@@ -310,15 +320,18 @@
 		};
 		
         function insideWindow(){
-            return wH > $popup.outerHeight(true) && wW > $popup.outerWidth(true);
+            return {  
+				x: wW > $popup.outerWidth(true),
+				y: wH > $popup.outerHeight(true)	
+			}
         };
 		
 		function windowHeight(){
-			return w.innerHeight || $w.height();
+			return $w.height();
 		};
 		
 		function windowWidth(){
-			return w.innerWidth || $w.width();
+			return $w.width();
 		};
     };
 

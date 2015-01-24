@@ -15,7 +15,7 @@
 		"animate",
 		"jquery"
 	],
-	"version": "0.10.0-1",
+	"version": "0.11.0",
 	"author": {
 		"name": "Bjørn Klinggaard",
 		"url": "http://dinbror.dk/"
@@ -23,7 +23,7 @@
 	"licenses": [
 		{
 			"type": "DWIWYWBPVMS",
-			"url": "http://dinbror.dk/blog/bpopup"
+			"url": "http://dinbror.dk/blog/bPopup/#license"
 		}
 	],
 	"homepage": "http://dinbror.dk/blog/bpopup",
