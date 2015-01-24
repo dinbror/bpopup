@@ -16,7 +16,7 @@ bPopup is a lightweight jQuery modal popup plugin (only 1.34KB gzipped). It does
 
 ### v 0.10.0 (07-22-2014) ###
 * Bugfix: `autoClose` will not trigger if you close the popup before it times out.
-* Added: `reposition(animateSpeed)`, a public function that recalculates the center position of the popup. You can pass an optionel animate speed attribute. If not defined it will use the `followSpeed` value ([#8](https://github.com/dinbror/bpopup/pull/8)). 
+* Added: `reposition(animateSpeed)`, a public function that recalculates the center position of the popup. You can pass an optional animate speed attribute. If not defined it will use the `followSpeed` value ([#8](https://github.com/dinbror/bpopup/pull/8)). 
 Usage: 
 ```javascript 
 var bPopup = $(‘element_to_pop_up’).bPopup();
