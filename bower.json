@@ -10,7 +10,8 @@
 		"overlay",
 		"modal",
 		"ui",
-		"jquery"
+		"jquery",
+		"jquery-plugin"
 	],
 	"authors": [
 		{
