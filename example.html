@@ -1,0 +1,136 @@
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style>
+#pop { 
+    background-color:#fff;
+    border-radius:15px;
+    color:#000;
+    display:none; 
+    margin-top: 40px;
+    padding:20px;
+    min-width:400px;
+    min-height: 180px;
+}
+
+#popcontent { 
+    background-color:#fff;
+    border-radius:15px;
+    color:#000;
+    display:none; 
+    margin-top: 40px;
+    padding:20px;
+    min-width:500px;
+    min-height: 400px;
+}
+
+.b-iframe {
+    min-width:500px;
+    min-height: 400px;
+ }
+ 
+.button {
+    background-color:#2b91af;
+    border-radius:10px;
+    box-shadow:0 2px 3px rgba(0,0,0,0.3);
+    color:#fff;
+    cursor:pointer;
+    display:inline-block;
+    padding:10px 20px;
+    text-align:center;
+    text-decoration:none
+    }
+
+.button.small {
+    border-radius:15px;
+    float:right;
+    margin:22px 5px 0;
+    padding:6px 15px
+    }
+
+.button:hover {
+    background-color:#1e1e1e
+    }
+
+.button>span {
+    font-size:84%
+    }
+
+.button.b-close,.button.bClose {
+    border-radius:7px 7px 7px 7px;
+    box-shadow:none;
+    font:bold 131% sans-serif;
+    padding:0 6px 2px;
+    position:absolute;
+    right:-7px;
+    top:-7px
+    }
+    
+    </style>
+    
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="jquery.bpopup.min.js"></script>
+  <script>
+      // Semicolon (;) to ensure closing of earlier scripting
+    // Encapsulation
+    // $ is assigned to jQuery
+    ;(function($) {
+
+         // DOM Ready
+        $(function() {
+
+            // Binding a click event
+            // From jQuery v.1.7.0 use .on() instead of .bind()
+            $('#my-button').bind('click', function(e) {
+
+                // Prevents the default action to be triggered. 
+                e.preventDefault();
+
+                // Triggering bPopup when click event is fired
+		$('#pop').bPopup();                
+
+            });
+            
+            $('#my-button-blog').bind('click', function(e) {
+
+                // Prevents the default action to be triggered. 
+                e.preventDefault();
+
+                // Triggering bPopup when click event is fired
+		$('#popcontent').bPopup({
+		  content:'iframe',
+		  contentContainer:'.content',
+		  loadUrl: 'http://dinbror.dk/blog/' //Uses jQuery.load()
+		}, function(){
+		  $( ".b-iframe" ).attr( "scrolling", "yes" );
+		});                
+		
+		
+
+            });
+        });
+
+    })(jQuery);
+    </script>
+  </head>
+  <body>
+  
+<!-- Button that triggers the popup -->
+<button id="my-button">POP IT UP</button>
+<button id="my-button-blog">POP IT UP (Blog)</button>
+
+<!-- Element to pop up -->
+<div id="pop">
+<span class="button b-close"><span>X</span></span>
+    Content of popup
+</div>  
+
+<div id="popcontent">
+<span class="button b-close"><span>X</span></span>
+<div class="content">
+</div>
+</div> 
+
+</body>
+</html>
