@@ -368,8 +368,12 @@
 		};
 		
        	function calcPosition(){
-			vPos 		= fixedVPos ? o.position[1] : Math.max(0, ((wH- $popup.outerHeight(true)) / 2) - o.amsl),
-			hPos 		= fixedHPos ? o.position[0] : (wW - $popup.outerWidth(true)) / 2,
+			vPos 		= fixedVPos 
+                            ? (typeof o.position[1] == 'function' ? triggerCall(o.position[1]) : o.position[1]) 
+                            : Math.max(0, ((wH- $popup.outerHeight(true)) / 2) - o.amsl),
+			hPos 		= fixedHPos 
+                            ? (typeof o.position[0] == 'function' ? triggerCall(o.position[0]) : o.position[0]) 
+                            : (wW - $popup.outerWidth(true)) / 2,
 			inside      = insideWindow();
 		};
 		
