@@ -1,7 +1,7 @@
 {
 	"name": "bPopup",
 	"main": "jquery.bpopup.js",
-	"version": "0.11.0",
+	"version": "0.11.1",
 	"description": " bPopup is a lightweight jQuery modal popup plugin. It doesn't create or style your popup but provides you with all the logic like centering, modal overlay, events and more. It gives you a lot of opportunities to customize so it will fit your needs.",
 	"homepage": "https://github.com/dinbror/bpopup",
 	"keywords": [
@@ -22,7 +22,9 @@
 	],
 	"license": "DWIWYWBPVMS",
 	"moduleType": [
-    		"jquery"
+    	"jquery"
 	],
-	"ignore": []
+	"ignore": [
+		".gitignore"
+	]
 }
