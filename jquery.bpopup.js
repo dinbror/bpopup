@@ -17,7 +17,7 @@
         }
 
 		// OPTIONS
-        var o 				= $.extend({}, $.fn.bPopup.defaults, options);
+        var o 				= $.extend({}, $.fn.bPopup.defaults, this.data('bPopup'), options);
 		
 		// HIDE SCROLLBAR?  
         if (!o.scrollBar)
@@ -67,6 +67,7 @@
         // HELPER FUNCTIONS - PRIVATE
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         function init() {
+          $popup.data('bPopup', o);
             triggerCall(o.onOpen);
 			popups = ($w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
             o.loadUrl ? createContent() : open();
