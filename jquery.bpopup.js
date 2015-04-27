@@ -113,6 +113,12 @@
             }
 			
 			// POPUP
+			var screenWidth= screen.width;
+			var screenHeight= screen.height;
+			var imageWidth= parseInt(screenWidth)/100 * 50;
+			
+			$('div img', $popup).attr({'width': '50%'});
+
 			calcPosition();
             $popup
 				.data('bPopup', o).data('id',id)
