@@ -104,6 +104,7 @@
         };
 
 		function open(){
+			triggerCall(o.beforeOpen);
 			// MODAL OVERLAY
             if (o.modal) {
                 $('<div class="b-modal '+id+'"></div>')
@@ -130,6 +131,7 @@
 		};
 		
         function close() {
+        	triggerCall(o.beforeClose);
             if (o.modal) {
                 $('.b-modal.'+$popup.data('id'))
 	                .fadeTo(o.speed, 0, function() {
@@ -358,7 +360,9 @@
         , modal: 			true
         , modalClose: 		true
         , modalColor: 		'#000'
+        , beforeClose: 			false        
         , onClose: 			false
+        , beforeOpen: 			false        
         , onOpen: 			false
         , opacity: 			0.7
         , position: 		['auto', 'auto'] // x, y,
