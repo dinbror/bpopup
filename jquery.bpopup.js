@@ -134,6 +134,9 @@
 		};
 		
         function close() {
+
+        	triggerCall(o.beforeClose);
+
             if (o.modal) {
                 $('.b-modal.'+$popup.data('id'))
 	                .fadeTo(o.speed, 0, function() {
@@ -296,7 +299,6 @@
 					autoCloseTO = setTimeout(close, o.autoClose);
 				}
 			} else {
-				triggerCall(o.beforeClose);
 				$popup.hide();
 				triggerCall(o.onClose);
 				if (o.loadUrl) {
