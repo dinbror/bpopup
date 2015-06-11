@@ -18,6 +18,10 @@
 
 		// OPTIONS
         var o 				= $.extend({}, $.fn.bPopup.defaults, options);
+
+        if(o.afterOpen !== false){
+        	callback = o.afterOpen;
+        }
 		
 		// HIDE SCROLLBAR?  
         if (!o.scrollBar)
@@ -104,7 +108,6 @@
         };
 
 		function open(){
-			triggerCall(o.beforeOpen);
 			// MODAL OVERLAY
             if (o.modal) {
                 $('<div class="b-modal '+id+'"></div>')
@@ -127,11 +130,10 @@
                 		$(this).appendTo(o.appendTo);
             		}
         		});
-			doTransition(true);	
+			doTransition(true);
 		};
 		
         function close() {
-        	triggerCall(o.beforeClose);
             if (o.modal) {
                 $('.b-modal.'+$popup.data('id'))
 	                .fadeTo(o.speed, 0, function() {
@@ -294,6 +296,7 @@
 					autoCloseTO = setTimeout(close, o.autoClose);
 				}
 			} else {
+				triggerCall(o.beforeClose);
 				$popup.hide();
 				triggerCall(o.onClose);
 				if (o.loadUrl) {
@@ -360,10 +363,10 @@
         , modal: 			true
         , modalClose: 		true
         , modalColor: 		'#000'
-        , beforeClose: 			false        
         , onClose: 			false
-        , beforeOpen: 			false        
+        , beforeClose: 		false
         , onOpen: 			false
+        , afterOpen: 		false
         , opacity: 			0.7
         , position: 		['auto', 'auto'] // x, y,
         , positionStyle: 	'absolute'// absolute or fixed
