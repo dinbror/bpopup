@@ -57,6 +57,10 @@
         $popup.close = function() {
             close();
         };
+
+        $popup.open = function(){
+        	open();
+        }
 		
         $popup.reposition = function(animateSpeed) {
             reposition(animateSpeed);
@@ -73,7 +77,10 @@
         function init() {
             triggerCall(o.onOpen);
 			popups = ($w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
-            o.loadUrl ? createContent() : open();
+        	if(o.autoOpen){
+        		o.loadUrl ? createContent() : open();	
+        	}
+            // o.loadUrl ? createContent() : open();
         };
 		
 		function createContent() {
@@ -349,6 +356,7 @@
           amsl: 			50
         , appending: 		true
         , appendTo: 		'body'
+		, autoOpen:			false        
 		, autoClose:		false
         , closeClass: 		'b-close'
         , content: 			'ajax' // ajax, iframe or image
