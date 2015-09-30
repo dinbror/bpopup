@@ -1,0 +1,81 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Alert Demo</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/jquery-2.1.4.min.js" type="text/javascript"></script>
+    <script src="js/jquery.bpopup.min.js" type="text/javascript"></script>
+    <script src="js/jquery-ui.min.js"></script>
+  </head>
+  <body>
+</div>
+    <div id="element_to_pop_up" class="b-popup">
+        <a class="b-close b-close-trigger">x</a>
+        <div class="b-image-container">
+          <img src="images/question.png" class="b-image">
+        </div>
+        <div class="b-content"></div>
+        <div style="clear:both"></div>
+        <div class="b-btnarea">
+          <a href="#" class="b-btn b-btn-primary b-confirm-trigger">
+            Ok</a>
+          <a href="#" class="b-btn b-btn-cancel b-close-trigger">Cancel</a>
+        </div>
+    </div>
+    <div id="element_to_pop_up2" class="b-popup">
+        <a class="b-close b-close-trigger">x</a>
+        <div class="b-image-container">
+          <img src="images/error.png" class="b-image" >
+        </div>
+        <div class="b-content"></div>
+        <div style="clear:both"></div>
+        <div class="b-btnarea">
+          <a href="#" class="b-btn b-btn-primary b-close-trigger">Close</a>
+        </div>
+    </div>
+    <input type="button" id="show" value="Show it">
+    <input type="button" id="show2" value="Show it2">
+    <script>      
+      $(function() {
+        $("#show").click(function(){
+          $('#element_to_pop_up').bPopup({
+            easing: 'easeOutBack', //uses jQuery easing plugin
+            speed: 450,
+            transition: 'slideDown',
+            onOpen: function() {
+              $(this).find('.b-content').html('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
+            },
+            onClose: function() {
+              $(this).find('.b-content').empty();
+            },
+            onConfirm: function() {
+              alert('confirm');
+            },
+            closeClass: 'b-close-trigger',
+            confirmClass: 'b-confirm-trigger',
+          });
+        });
+        
+        $("#show2").click(function(){
+          $('#element_to_pop_up2').bPopup({
+            speed: 650,
+            transition: 'slideIn',
+            transitionClose: 'slideBack',
+            onOpen: function() {
+              $(this).find('.b-content').html('Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
+            },
+            onClose: function() {
+              $(this).find('.b-content').empty();
+            },
+            onConfirm: function() {
+              alert('confirm2');
+            },
+            closeClass: 'b-close-trigger',
+            confirmClass: 'b-confirm-trigger',
+          });
+        });
+      })
+    </script>
+  </body>
+</html>
