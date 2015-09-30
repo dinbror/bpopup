@@ -45,6 +45,7 @@
 		  , width
 		  , debounce
 		  , autoCloseTO
+		  , isConfirm		= false
 		;
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +54,7 @@
         $popup.close = function() {
             close();
         };
-		
+			
         $popup.reposition = function(animateSpeed) {
             reposition(animateSpeed);
         };
@@ -145,6 +146,11 @@
 			return false; // Prevent default
         };
 		
+		function confirm() {
+			close();
+			isConfirm = true;
+		}
+		
 		function reposition(animateSpeed){
             wH = windowHeight();
   		    wW = windowWidth();
@@ -207,7 +213,8 @@
         function bindEvents() {
             $w.data('bPopup', popups);
 			$popup.delegate('.bClose, .' + o.closeClass, 'click.'+id, close); // legacy, still supporting the close class bClose
-            
+            $popup.delegate('.' + o.confirmClass, 'click.'+id, confirm);
+			
             if (o.modalClose) {
                 $('.b-modal.'+id).css('cursor', 'pointer').bind('click', close);
             }
@@ -247,6 +254,7 @@
             d.unbind('keydown.'+id);
             $w.unbind('.'+id).data('bPopup', ($w.data('bPopup')-1 > 0) ? $w.data('bPopup')-1 : null);
             $popup.undelegate('.bClose, .' + o.closeClass, 'click.'+id, close).data('bPopup', null);
+			$popup.undelegate('.' + o.confirmClass, 'click.'+id, confirm).data('bPopup', null);
         };
 		
 		function doTransition(open) {
@@ -293,7 +301,14 @@
 				}
 			} else {
 				$popup.hide();
-				triggerCall(o.onClose);
+				if (isConfirm) {
+					isConfirm = false;
+					triggerCall(o.onConfirm);
+				}
+				else {
+					triggerCall(o.onClose);
+				}
+				
 				if (o.loadUrl) {
                     o.contentContainer.empty();
 					$popup.css({height: 'auto', width: 'auto'});
@@ -368,5 +383,7 @@
 		, transition:		'fadeIn' //transitions: fadeIn, slideDown, slideIn, slideBack
 		, transitionClose:	false
         , zIndex: 			9997 // popup gets z-index 9999, modal overlay 9998
+		, confirmClass:		'b-confirm'
+		, onConfirm: 		false
     };
 })(jQuery);
