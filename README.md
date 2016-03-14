@@ -13,7 +13,7 @@ bPopup is a lightweight jQuery modal popup plugin (only 1.34KB gzipped). It does
 
 ### v 0.11.1 (14-3-2016) ### (T. Groote)
 * Trigger a close event when the popup is dismissed. you can subscribe to it using the return value of the bPopup() function.
- example : ```javascript $("#popupContent").bPopup().on("close", function(){alert("closed!")}); ```
+ example : ```$("#popupContent").bPopup().on("close", function(){alert("closed!")}); ```
 
 
 ### v 0.11.0 (01-24-2015) ###
