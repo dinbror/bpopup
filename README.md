@@ -10,6 +10,12 @@ http://dinbror.dk/blog/bpopup
 bPopup is a lightweight jQuery modal popup plugin (only 1.34KB gzipped). It doesn't create or style your popup but provides you with all the logic like centering, modal overlay, events and more. It gives you a lot of opportunities to customize so it will fit your needs.
 
 ## CHANGELOG
+
+### v 0.11.1 (14-3-2016) ### (T. Groote)
+* Trigger a close event when the popup is dismissed. you can subscribe to it using the return value of the bPopup() function.
+* example : $("#popupContent").bPopup().on("close", function(){alert("closed!")});
+
+
 ### v 0.11.0 (01-24-2015) ###
 * Fixed [#7](https://github.com/dinbror/bpopup/issues/7) and [#21](https://github.com/dinbror/bpopup/issues/21). Using fallback width as default to fix the width issue when scrollbar visible.
 * Fixed [#8](https://github.com/dinbror/bpopup/issues/8) and [#17](https://github.com/dinbror/bpopup/issues/17). "insideWindow" function updated so it now checks if height OR width is inside window instead of only width AND height.
