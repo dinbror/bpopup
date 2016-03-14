@@ -130,19 +130,21 @@
 		};
 		
         function close() {
-            if (o.modal) {
-                $('.b-modal.'+$popup.data('id'))
-	                .fadeTo(o.speed, 0, function() {
-	                    $(this).remove();
-	                });
-            }
-			// Clean up
-			unbindEvents();	
-			clearTimeout(autoCloseTO);
-			// Close trasition
-            doTransition();
-            
-			return false; // Prevent default
+            	if (o.modal) 
+            	{
+			$('.b-modal.'+$popup.data('id'))
+			.fadeTo(o.speed, 0, function() 
+			{
+			    	$(this).remove();
+			});
+            	}
+		// Clean up
+		unbindEvents();	
+		clearTimeout(autoCloseTO);
+		// Close trasition
+    		doTransition();
+    		$(this).trigger("close");
+		return false; // Prevent default
         };
 		
 		function reposition(animateSpeed){
