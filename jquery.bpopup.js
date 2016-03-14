@@ -143,7 +143,6 @@
 		clearTimeout(autoCloseTO);
 		// Close trasition
     		doTransition();
-    		$(this).trigger("close");
 		return false; // Prevent default
         };
 		
@@ -296,6 +295,7 @@
 			} else {
 				$popup.hide();
 				triggerCall(o.onClose);
+				$popup.trigger("close")
 				if (o.loadUrl) {
                     o.contentContainer.empty();
 					$popup.css({height: 'auto', width: 'auto'});
