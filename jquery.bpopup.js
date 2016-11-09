@@ -51,6 +51,8 @@
         // PUBLIC FUNCTION - call it: $(element).bPopup().close();
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////
         $popup.close = function() {
+            o = this.data('bPopup');
+            id = prefix +$w.data('bPopup') + '__';
             close();
         };
 		
