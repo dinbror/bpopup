@@ -130,19 +130,20 @@
 		};
 		
         function close() {
-            if (o.modal) {
-                $('.b-modal.'+$popup.data('id'))
-	                .fadeTo(o.speed, 0, function() {
-	                    $(this).remove();
-	                });
-            }
-			// Clean up
-			unbindEvents();	
-			clearTimeout(autoCloseTO);
-			// Close trasition
-            doTransition();
-            
-			return false; // Prevent default
+            	if (o.modal) 
+            	{
+			$('.b-modal.'+$popup.data('id'))
+			.fadeTo(o.speed, 0, function() 
+			{
+			    	$(this).remove();
+			});
+            	}
+		// Clean up
+		unbindEvents();	
+		clearTimeout(autoCloseTO);
+		// Close trasition
+    		doTransition();
+		return false; // Prevent default
         };
 		
 		function reposition(animateSpeed){
@@ -294,6 +295,7 @@
 			} else {
 				$popup.hide();
 				triggerCall(o.onClose);
+				$popup.trigger("close")
 				if (o.loadUrl) {
                     o.contentContainer.empty();
 					$popup.css({height: 'auto', width: 'auto'});
