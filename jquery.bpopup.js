@@ -1,3 +1,4 @@
+/* bpopup_fix_3.js */
 /*===================================================================================================================
  * @name: bPopup
  * @type: jQuery
@@ -18,6 +19,10 @@
 
 		// OPTIONS
         var o 				= $.extend({}, $.fn.bPopup.defaults, options);
+
+        if(o.afterOpen !== false){
+        	callback = o.afterOpen;
+        }
 		
 		// HIDE SCROLLBAR?  
         if (!o.scrollBar)
@@ -53,7 +58,15 @@
         $popup.close = function() {
             close();
         };
-		
+
+        $popup.open = function(){
+        	open();
+        }
+
+        $popup.destroy = function(){
+        	destroy();
+        }
+
         $popup.reposition = function(animateSpeed) {
             reposition(animateSpeed);
         };
@@ -69,7 +82,10 @@
         function init() {
             triggerCall(o.onOpen);
 			popups = ($w.data('bPopup') || 0) + 1, id = prefix + popups + '__',fixedVPos = o.position[1] !== 'auto', fixedHPos = o.position[0] !== 'auto', fixedPosStyle = o.positionStyle === 'fixed', height = $popup.outerHeight(true), width = $popup.outerWidth(true);
-            o.loadUrl ? createContent() : open();
+        	if(o.autoOpen){
+        		o.loadUrl ? createContent() : open();	
+        	}
+            // o.loadUrl ? createContent() : open();
         };
 		
 		function createContent() {
@@ -106,10 +122,15 @@
 		function open(){
 			// MODAL OVERLAY
             if (o.modal) {
-                $('<div class="b-modal '+id+'"></div>')
-                .css({backgroundColor: o.modalColor, position: 'fixed', top: 0, right:0, bottom:0, left: 0, opacity: 0, zIndex: o.zIndex + popups})
-                .appendTo(o.appendTo)
-                .fadeTo(o.speed, o.opacity);
+            	if($('div.b-modal.'+id).length){
+            		// console.log('b-modal exists');
+            		// Do nothing - b-modal (overlay) already exists
+            	}else{
+            		$('<div class="b-modal '+id+'"></div>')
+            		.css({backgroundColor: o.modalColor, position: 'fixed', top: 0, right:0, bottom:0, left: 0, opacity: 0, zIndex: o.zIndex + popups})
+            		.appendTo(o.appendTo)
+            		.fadeTo(o.speed, o.opacity);
+            	}
             }
 			
 			// POPUP
@@ -126,10 +147,13 @@
                 		$(this).appendTo(o.appendTo);
             		}
         		});
-			doTransition(true);	
+			doTransition(true);
 		};
 		
         function close() {
+
+        	triggerCall(o.beforeClose);
+
             if (o.modal) {
                 $('.b-modal.'+$popup.data('id'))
 	                .fadeTo(o.speed, 0, function() {
@@ -143,6 +167,14 @@
             doTransition();
             
 			return false; // Prevent default
+        };
+
+        function destroy(){
+            if (o.modal) {
+                $('.b-modal.'+$popup.data('id')).remove();
+            }
+			unbindEvents();
+			$popup.remove();
         };
 		
 		function reposition(animateSpeed){
@@ -314,9 +346,13 @@
 		};
 		
        	function calcPosition(){
-			vPos 		= fixedVPos ? o.position[1] : Math.max(0, ((wH- $popup.outerHeight(true)) / 2) - o.amsl)
-			, hPos 		= fixedHPos ? o.position[0] : (wW - $popup.outerWidth(true)) / 2
-			, inside 	= insideWindow();
+			vPos = fixedVPos ? o.position[1] : Math.max(0, ((wH- $popup.outerHeight(true)) / 2) - o.amsl);
+			if(o.positionContainer != null){
+				hPos = fixedHPos ? o.position[0] : (o.positionContainer.outerWidth() - $popup.outerWidth(true)) / 2;
+			}else{
+				hPos = fixedHPos ? o.position[0] : (wW - $popup.outerWidth(true)) / 2;
+			}
+			inside = insideWindow();
 		};
 		
         function insideWindow(){
@@ -342,6 +378,7 @@
           amsl: 			50
         , appending: 		true
         , appendTo: 		'body'
+		, autoOpen:			false        
 		, autoClose:		false
         , closeClass: 		'b-close'
         , content: 			'ajax' // ajax, iframe or image
@@ -359,7 +396,9 @@
         , modalClose: 		true
         , modalColor: 		'#000'
         , onClose: 			false
+        , beforeClose: 		false
         , onOpen: 			false
+        , afterOpen: 		false
         , opacity: 			0.7
         , position: 		['auto', 'auto'] // x, y,
         , positionStyle: 	'absolute'// absolute or fixed
@@ -368,5 +407,6 @@
 		, transition:		'fadeIn' //transitions: fadeIn, slideDown, slideIn, slideBack
 		, transitionClose:	false
         , zIndex: 			9997 // popup gets z-index 9999, modal overlay 9998
+        , positionContainer:null
     };
 })(jQuery);
